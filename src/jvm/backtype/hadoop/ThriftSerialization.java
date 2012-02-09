@@ -1,31 +1,40 @@
 package backtype.hadoop;
 
 import cascading.tuple.Comparison;
-import java.util.Comparator;
 import org.apache.hadoop.io.serializer.Deserializer;
 import org.apache.hadoop.io.serializer.Serialization;
 import org.apache.hadoop.io.serializer.Serializer;
 import org.apache.thrift.TBase;
+import org.apache.thrift.TEnum;
+
+import java.util.Comparator;
 
 /**
  * Adapted from http://issues.apache.org/jira/browse/MAPREDUCE-376
  */
-public class ThriftSerialization implements Serialization<TBase>, Comparison<TBase> {
+public class ThriftSerialization implements Serialization, Comparison {
 
-  public boolean accept(Class<?> c) {
-    boolean ret = TBase.class.isAssignableFrom(c);
-    return ret;
-  }
+    public boolean isTBase(Class c) {
+        return TBase.class.isAssignableFrom(c);
+    }
 
-  public Deserializer<TBase> getDeserializer(Class<TBase> c) {
-    return new ThriftDeserializer(c);
-  }
+    public boolean isTEnum(Class c) {
+        return TEnum.class.isAssignableFrom(c);
+    }
 
-  public Serializer<TBase> getSerializer(Class<TBase> c) {
-    return new ThriftSerializer();
-  }
+    public boolean accept(Class c) {
+        return isTBase(c) || isTEnum(c);
+    }
 
-  public Comparator<TBase> getComparator(Class<TBase> type) {
-    return new ThriftComparator(type);
-  }
+    public Serializer getSerializer(Class c) {
+        return isTBase(c) ? new ThriftSerializer() : new EnumSerializer();
+    }
+
+    public Deserializer getDeserializer(Class c) {
+        return isTBase(c) ? new ThriftDeserializer(c) : new EnumDeserializer();
+    }
+
+    public Comparator getComparator(Class type) {
+        return new ThriftComparator(type);
+    }
 }

@@ -1,4 +1,4 @@
-(defproject backtype/cascading-thrift "0.2.0"
+(defproject backtype/cascading-thrift "0.2.1-SNAPSHOT"
   :source-path "src/clj"
   :java-source-path "src/jvm"
   :javac-options {:debug "true" :fork "true"}
@@ -6,5 +6,5 @@
   :dependencies [[cascading/cascading-hadoop "2.0.0-wip-166"
                   :exclusions [org.codehaus.janino/janino
                                org.apache.hadoop/hadoop-core]]
-                 [backtype/thriftjava "1.0.0"]]
+                 [org.apache.thrift/libthrift "0.6.1"]]
   :dev-dependencies [[org.apache.hadoop/hadoop-core "0.20.2-dev"]])
