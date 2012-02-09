@@ -10,5 +10,5 @@ For Cascading 1.2 support, use
 
 For Cascading 2.0, use
 
-    [backtype/cascading-thrift "0.2.0"]
+    [backtype/cascading-thrift "0.2.1"]
 
