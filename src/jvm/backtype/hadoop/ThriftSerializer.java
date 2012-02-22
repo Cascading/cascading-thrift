@@ -1,9 +1,5 @@
 package backtype.hadoop;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.io.serializer.Serializer;
 import org.apache.thrift.TBase;
@@ -12,19 +8,24 @@ import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TIOStreamTransport;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 
 public class ThriftSerializer implements Serializer<TBase> {
     private TIOStreamTransport transport;
     private TProtocol protocol;
     private ByteArrayOutputStream buffer;
 
-    private OutputStream realout;
+    private OutputStream realOut;
     private DataOutputStream dos;
 
     public void open(OutputStream out) throws IOException {
-        realout = out;
-        dos = new DataOutputStream(realout);
-        
+        realOut = out;
+        dos = new DataOutputStream(realOut);
+
         buffer = new ByteArrayOutputStream();
         transport = new TIOStreamTransport(buffer);
         protocol = new TCompactProtocol(transport);
@@ -32,11 +33,11 @@ public class ThriftSerializer implements Serializer<TBase> {
 
     public void serialize(TBase t) throws IOException {
         try {
-          buffer.reset();
-          t.write(protocol);
+            buffer.reset();
+            t.write(protocol);
 
-          WritableUtils.writeVInt(dos, buffer.size());
-          buffer.writeTo(realout);
+            WritableUtils.writeVInt(dos, buffer.size());
+            buffer.writeTo(realOut);
         } catch (TException e) {
             throw new IOException(e);
         }

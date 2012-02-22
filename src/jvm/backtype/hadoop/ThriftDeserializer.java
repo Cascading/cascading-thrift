@@ -1,8 +1,5 @@
 package backtype.hadoop;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.io.serializer.Deserializer;
 import org.apache.thrift.TBase;
@@ -10,6 +7,10 @@ import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TIOStreamTransport;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class ThriftDeserializer implements Deserializer<TBase> {
@@ -39,16 +40,16 @@ public class ThriftDeserializer implements Deserializer<TBase> {
         WritableUtils.readVInt(dis);
         TBase object = prototype.deepCopy();
         try {
-          object.read(protocol);
+            object.read(protocol);
         } catch (TException e) {
-          throw new IOException(e.toString());
+            throw new IOException(e.toString());
         }
         return object;
     }
 
     public void close() throws IOException {
         if (transport != null) {
-           transport.close();
+            transport.close();
         }
     }
 
