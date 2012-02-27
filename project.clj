@@ -1,4 +1,4 @@
-(defproject backtype/cascading-thrift "0.2.2"
+(defproject backtype/cascading-thrift "0.2.3-SNAPSHOT"
   :source-path "src/clj"
   :java-source-path "src/jvm"
   :javac-options {:debug "true" :fork "true"}
