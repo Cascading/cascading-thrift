@@ -1,30 +1,24 @@
 package backtype.hadoop;
 
+import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.io.serializer.Serializer;
+import org.apache.thrift.TEnum;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 
 /** User: sritchie Date: 2/8/12 Time: 9:49 PM */
-public class EnumSerializer<T extends Serializable> implements Serializer<T> {
-    private ObjectOutputStream oos;
+public class EnumSerializer implements Serializer<TEnum> {
+    private DataOutputStream outStream;
 
     public void open(OutputStream out) throws IOException {
-        oos = new ObjectOutputStream(out) {
-            @Override protected void writeStreamHeader() {
-                // no header
-            }
-        };
+        outStream = new DataOutputStream(out);
     }
 
-    public void serialize(T obj) throws IOException {
-        oos.reset(); // clear (class) back-references
-        oos.writeObject(obj);
+    public void serialize(TEnum obj) throws IOException {
+        WritableUtils.writeVInt(outStream, obj.getValue());
     }
 
     public void close() throws IOException {
-        oos.close();
+        outStream.close();
     }
 }

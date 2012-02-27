@@ -1,34 +1,42 @@
 package backtype.hadoop;
 
+import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.io.serializer.Deserializer;
+import org.apache.thrift.TEnum;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /** User: sritchie Date: 2/8/12 Time: 9:50 PM */
-public class EnumDeserializer<T extends Serializable> implements Deserializer<T> {
-    private ObjectInputStream ois;
+public class EnumDeserializer implements Deserializer<TEnum> {
+    private DataInputStream inStream;
+    final Method findByValue;
 
+    public EnumDeserializer(Class<TEnum> c) {
+        try {
+            Class[] args = new Class[] {Integer.TYPE};
+            findByValue = c.getDeclaredMethod("findByValue", args);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void open(InputStream in) throws IOException {
-        ois = new ObjectInputStream(in) {
-            @Override protected void readStreamHeader() {
-                // no header
-            }
-        };
+        inStream = new DataInputStream(in);
     }
 
-    public T deserialize(T obj) throws IOException {
+    public TEnum deserialize(TEnum obj) throws IOException {
         try {
-            // ignore passed-in object
-            return (T) ois.readObject();
-        } catch (ClassNotFoundException e) {
+            int val = WritableUtils.readVInt(inStream);
+            Object[] argVec = new Object[]{val};
+            return (TEnum) findByValue.invoke(null, argVec);
+        } catch (Exception e) {
             throw new IOException(e.toString());
         }
     }
 
     public void close() throws IOException {
-        ois.close();
+        inStream.close();
     }
 }

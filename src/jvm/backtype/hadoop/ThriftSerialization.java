@@ -31,7 +31,7 @@ public class ThriftSerialization implements Serialization, Comparison {
     }
 
     public Deserializer getDeserializer(Class c) {
-        return isTBase(c) ? new ThriftDeserializer(c) : new EnumDeserializer();
+        return isTBase(c) ? new ThriftDeserializer(c) : new EnumDeserializer(c);
     }
 
     public Comparator getComparator(Class type) {
