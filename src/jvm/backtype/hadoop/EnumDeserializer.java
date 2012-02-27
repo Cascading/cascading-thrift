@@ -12,23 +12,25 @@ import java.lang.reflect.Method;
 /** User: sritchie Date: 2/8/12 Time: 9:50 PM */
 public class EnumDeserializer implements Deserializer<TEnum> {
     private DataInputStream inStream;
-    Class<TEnum> enumClass;
+    final Method findByValue;
 
     public EnumDeserializer(Class<TEnum> c) {
-        enumClass = c;
+        try {
+            Class[] args = new Class[] {Integer.TYPE};
+            findByValue = c.getDeclaredMethod("findByValue", args);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void open(InputStream in) throws IOException {
         inStream = new DataInputStream(in);
     }
 
     public TEnum deserialize(TEnum obj) throws IOException {
-        int val = WritableUtils.readVInt(inStream);
-
-        Class[] args = new Class[] {Integer.TYPE};
         try {
-            Method method = enumClass.getDeclaredMethod("findByValue", args);
+            int val = WritableUtils.readVInt(inStream);
             Object[] argVec = new Object[]{val};
-            return (TEnum) method.invoke(null, argVec);
+            return (TEnum) findByValue.invoke(null, argVec);
         } catch (Exception e) {
             throw new IOException(e.toString());
         }
