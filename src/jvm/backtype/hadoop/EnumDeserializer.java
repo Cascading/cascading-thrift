@@ -1,34 +1,38 @@
 package backtype.hadoop;
 
+import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.io.serializer.Deserializer;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /** User: sritchie Date: 2/8/12 Time: 9:50 PM */
 public class EnumDeserializer<T extends Serializable> implements Deserializer<T> {
-    private ObjectInputStream ois;
+    private DataInputStream inStream;
 
     public void open(InputStream in) throws IOException {
-        ois = new ObjectInputStream(in) {
-            @Override protected void readStreamHeader() {
-                // no header
-            }
-        };
+        inStream = new DataInputStream(in);
     }
 
     public T deserialize(T obj) throws IOException {
+        String klassName = WritableUtils.readString(inStream);
+        int val = WritableUtils.readVInt(inStream);
+
+        Class[] args = new Class[] {Integer.TYPE};
         try {
-            // ignore passed-in object
-            return (T) ois.readObject();
-        } catch (ClassNotFoundException e) {
+            Class klass = Class.forName(klassName);
+            Method method = klass.getDeclaredMethod("findByValue", args);
+            Object[] argVec = new Object[]{val};
+            return (T) method.invoke(null, argVec);
+        } catch (Exception e) {
             throw new IOException(e.toString());
         }
     }
 
     public void close() throws IOException {
-        ois.close();
+        inStream.close();
     }
 }
