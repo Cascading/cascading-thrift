@@ -12,5 +12,5 @@ For Cascading 1.2 support, use
 For Cascading 2.0, use
 
 ```clojure
-[backtype/cascading-thrift "0.2.2"]
+[backtype/cascading-thrift "0.2.3"]
 ```
