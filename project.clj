@@ -3,7 +3,7 @@
   :java-source-path "src/jvm"
   :javac-options {:debug "true" :fork "true"}
   :repositories {"conjars" "http://conjars.org/repo"}
-  :dependencies [[cascading/cascading-hadoop "2.0.0-wip-259"
+  :dependencies [[cascading/cascading-hadoop "2.0.0-wip-281"
                   :exclusions [org.codehaus.janino/janino
                                org.apache.hadoop/hadoop-core]]
                  [org.apache.thrift/libthrift "0.6.1"]]
